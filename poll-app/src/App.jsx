@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from "react";
 import PollForm from "./components/PollForm";
 import PollList from "./components/PollList";
+import Navbar from "./components/Navbar";
 import "./index.css";
 
-const App = () => {
+import { db } from "./firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+
+
+
+ const App = () => {
   const defaultOptions = [
   { id: 1, text: "React", votes: 0 },
   { id: 2, text: "Vue", votes: 0 },
   { id: 3, text: "Angular", votes: 0 },
 ];
 
-const [options, setOptions] = useState(() => {
+ const [options, setOptions] = useState(() => {
   return JSON.parse(localStorage.getItem("options")) || defaultOptions;
 });
 
@@ -21,8 +33,8 @@ const [hasVoted, setHasVoted] = useState(() => {
   useEffect(() => {
   const savedOptions = JSON.parse(localStorage.getItem("options"));
   const savedVote = JSON.parse(localStorage.getItem("hasVoted"));
-
-  if (savedOptions) {
+ 
+   if (savedOptions) {
     setOptions(savedOptions);
   }
 
@@ -35,7 +47,7 @@ const [hasVoted, setHasVoted] = useState(() => {
     localStorage.setItem("options", JSON.stringify(options));
     localStorage.setItem("hasVoted", JSON.stringify(hasVoted));
   }, [options, hasVoted]);
-
+ 
   const addOption = (text) => {
     const newOption = {
       id: Date.now(),
@@ -67,10 +79,15 @@ const [hasVoted, setHasVoted] = useState(() => {
     setOptions(reset);
     setHasVoted(false);
   };
+ 
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 p-4">
+    <>
+    <Navbar />
+     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-xl mx-auto bg-white shadow-xl rounded-2xl p-6">
+        
+        
         <h1 className="text-10xl font-bold text-center text-blue-600 mb-6">
           Poll App
         </h1>
@@ -91,7 +108,8 @@ const [hasVoted, setHasVoted] = useState(() => {
         </button>
       </div>
     </div>
-  );
-};
+  
 
+   </>);
+}
 export default App;
