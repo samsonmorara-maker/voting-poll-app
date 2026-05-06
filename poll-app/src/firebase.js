@@ -21,26 +21,3 @@ export const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
 }); 
  
-
-
-/* //Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAvks_0JWZHlKUG5BldfbG__7zn2L6eA7s",
-  authDomain: "poll-app-539c7.firebaseapp.com",
-  projectId: "poll-app-539c7",
-  storageBucket: "poll-app-539c7.firebasestorage.app",
-  messagingSenderId: "137014115424",
-  appId: "1:137014115424:web:afc3d7395967382f121705",
-  measurementId: "G-JNKTXC2LXN"
-};
-AIzaSyAVEu3clLBYDCX_c12vUFYWWCMTcqsdo8E
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);  */

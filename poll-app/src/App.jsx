@@ -47,6 +47,7 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setLoading(false); // Stop loading once we know the auth state
     });
     return () => unsubscribe();
   }, []);
@@ -78,8 +79,10 @@ function App() {
       for (const opt of defaultOptions) {
         await setDoc(doc(db, "options", opt.id), { text: opt.text, votes: 0 });
       }
+      setLoading(false);
     } catch (e) {
       console.error("Seed failed:", e);
+      setLoading(false);
     }
   };
 
@@ -158,10 +161,11 @@ function App() {
     console.error("RESET ERROR:", error);
   }
 };
+if (loading) return <Loading />;
   if (!user) {
     return <Login />;
   }
-  if (loading) return <Loading />;
+  
 
   return (
     <>
