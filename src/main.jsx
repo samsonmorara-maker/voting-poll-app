@@ -18,10 +18,11 @@ const router = createBrowserRouter([
     path: "/about",
     element: <About />,
   },
-]);
+], { basename: "/voting-poll-app" }
+);
 
 createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <React.StrictMode >
     <RouterProvider router={router} />
   </React.StrictMode>
 );
