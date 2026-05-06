@@ -21,20 +21,14 @@ import {
   query,
   where,
   getDocs,
-  writeBatch, // Added for the reset fix
+  writeBatch, 
 } from "firebase/firestore";
 
 function App() {
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null); // Track logged-in user
+  const [user, setUser] = useState(null); 
 
-
-
- 
-
-
-  // Voter ID logic (Fallback if not logged in)
   const [voterId] = useState(() => {
     return localStorage.getItem("voterId") || crypto.randomUUID();
   });
@@ -42,17 +36,13 @@ function App() {
   useEffect(() => {
     localStorage.setItem("voterId", voterId);
   }, [voterId]);
-
-  // --- NEW: Auth State Listener ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setLoading(false); // Stop loading once we know the auth state
+      setLoading(false);
     });
     return () => unsubscribe();
   }, []);
-
-  // Combined Listener: Syncs data and triggers seed if empty
   useEffect(() => {
     const optionsCollection = collection(db, "options");
     
@@ -88,7 +78,6 @@ function App() {
 
   const handleVote = async (id) => {
     try {
-      // Use User ID if logged in, otherwise use local voterId
       const activeVoterId = user ? user.uid : voterId;
 
       const votesRef = collection(db, "votes");
@@ -144,13 +133,9 @@ function App() {
     snapshot.forEach((voteDoc) => {
       const voteData = voteDoc.data();
       const optionRef = doc(db, "options", voteData.optionId);
-
-      // decrement vote count
       batch.update(optionRef, {
         votes: increment(-1),
       });
-
-      // delete ONLY this user's vote
       batch.delete(voteDoc.ref);
     });
 
