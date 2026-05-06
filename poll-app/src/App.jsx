@@ -24,56 +24,54 @@ import {
   writeBatch, 
 } from "firebase/firestore";
 
-function App() {
-  const [options, setOptions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null); 
+const App = () => {
+  const defaultOptions = [
+    { id: 1, text: "React", votes: 0 },
+    { id: 2, text: "Vue", votes: 0 },
+    { id: 3, text: "Angular", votes: 0 },
+  ];
 
-  const [voterId] = useState(() => {
-    return localStorage.getItem("voterId") || crypto.randomUUID();
+  const [options, setOptions] = useState(() => {
+    return JSON.parse(localStorage.getItem("options")) || defaultOptions;
+  });
+
+  const [hasVoted, setHasVoted] = useState(() => {
+    return JSON.parse(localStorage.getItem("hasVoted")) || false;
   });
 
   useEffect(() => {
-    localStorage.setItem("voterId", voterId);
-  }, [voterId]);
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-  useEffect(() => {
-    const optionsCollection = collection(db, "options");
-    
-    const unsub = onSnapshot(optionsCollection, (snapshot) => {
-      if (snapshot.empty) {
-        seedData();
-      } else {
-        const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setOptions(data);
-        setLoading(false);
-      }
-    });
+    const savedOptions = JSON.parse(localStorage.getItem("options"));
+    const savedVote = JSON.parse(localStorage.getItem("hasVoted"));
 
-    return () => unsub();
-  }, []);
-
-  const seedData = async () => {
-    const defaultOptions = [
-      { id: "react", text: "React" },
-      { id: "vue", text: "Vue" },
-      { id: "angular", text: "Angular" }
-    ];
-    try {
-      for (const opt of defaultOptions) {
-        await setDoc(doc(db, "options", opt.id), { text: opt.text, votes: 0 });
-      }
-      setLoading(false);
-    } catch (e) {
-      console.error("Seed failed:", e);
-      setLoading(false);
+    if (savedOptions) {
+      setOptions(savedOptions);
     }
+
+    if (savedVote !== null) {
+      setHasVoted(savedVote);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("options", JSON.stringify(options));
+    localStorage.setItem("hasVoted", JSON.stringify(hasVoted));
+  }, [options, hasVoted]);
+
+  const addOption = (text) => {
+    const newOption = {
+      id: Date.now(),
+      text,
+      votes: 0,
+    };
+    const exists = options.some(
+      (opt) => opt.text.toLowerCase() === text.toLowerCase(),
+    );
+    if (exists) {
+      alert("Option already exists!");
+      return;
+    }
+
+    setOptions([...options, newOption]);
   };
 
   const handleVote = async (id) => {
@@ -92,11 +90,9 @@ function App() {
       const optionRef = doc(db, "options", id);
       await updateDoc(optionRef, { votes: increment(1) });
 
-      await setDoc(doc(collection(db, "votes")), {
-        optionId: id,
-        voterId: activeVoterId,
-        timestamp: new Date()
-      });
+    const updated = options.map((opt) =>
+      opt.id === id ? { ...opt, votes: opt.votes + 1 } : opt,
+    );
 
     } catch (error) {
       console.error("VOTE ERROR:", error);
@@ -174,5 +170,4 @@ if (loading) return <Loading />;
   );
 }
 
-export default App; 
-     
+export default App;
