@@ -1,4 +1,4 @@
-name: Deploy Poll App to GitHub Pages
+        run: npm ci  name: Deploy Poll App to GitHub Pages
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         working-directory: ./poll-app
 
       - name: Build
